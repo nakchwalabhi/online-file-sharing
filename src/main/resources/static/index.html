@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FileShare</title>
+    <link href="./css/output.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+          theme: {
+            extend: {
+              colors: {
+                'gemini-dark': '#1a1a1a',
+                'gemini-card': '#2d2d2d',
+                'gemini-blue': '#4285f4',
+                'gemini-text': '#e8eaed',
+                'gemini-gray': '#5f6368'
+              }
+            }
+          }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        body {
+          font-family: 'Inter', sans-serif;
+        }
+
+        .gradient-bg {
+          background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        }
+
+        .glass-effect {
+          background: rgba(45, 45, 45, 0.8);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hover-scale {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-scale:hover {
+          transform: translateY(-4px);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .pulse-animation {
+          animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.7; }
+        }
+
+        .slide-up {
+          animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .file-input-custom {
+          position: relative;
+          overflow: hidden;
+        }
+
+        .file-input-custom input[type="file"] {
+          position: absolute;
+          left: -9999px;
+        }
+
+        .progress-bar {
+          transition: width 0.3s ease;
+        }
+
+        .spinner {
+          width: 20px;
+          height: 20px;
+          border: 2px solid #ffffff33;
+          border-top: 2px solid #ffffff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen text-white overflow-x-hidden">
+
+
+<!-- Header -->
+<header class="text-center py-8 px-4">
+    <div class="slide-up">
+        <h1 class="text-4xl md:text-5xl font-bold mb-3 bg-gradient-to-r from-gemini-blue to-blue-400 bg-clip-text text-transparent">
+            FileShare
+        </h1>
+        <p class="text-gemini-gray text-lg">Fast, secure, and hassle-free file sharing</p>
+    </div>
+</header>
+
+<!-- Main Content -->
+<main class="flex-grow px-4 pb-8">
+    <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
+
+        <!-- Upload Section -->
+        <section class="glass-effect rounded-3xl p-8 hover-scale slide-up" style="animation-delay: 0.1s">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-4 bg-gemini-blue/20 rounded-2xl flex items-center justify-center">
+                    <svg class="w-8 h-8 text-gemini-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-semibold mb-2">Upload File</h2>
+                <p class="text-gemini-gray text-sm">Share your files instantly</p>
+            </div>
+
+            <form id="uploadForm" class="space-y-6">
+                <div class="file-input-custom">
+                    <label for="fileInput" class="block w-full p-6 border-2 border-dashed border-gemini-gray/30 rounded-xl cursor-pointer hover:border-gemini-blue/50 transition-colors duration-300 text-center">
+                        <div id="fileInputLabel">
+                            <svg class="w-10 h-10 mx-auto mb-3 text-gemini-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            <p class="text-white font-medium">Click to select file</p>
+                            <p class="text-gemini-gray text-sm mt-1">or drag and drop</p>
+                        </div>
+                    </label>
+                    <input type="file" id="fileInput" accept="*/*">
+                </div>
+
+                <div id="uploadProgress" class="hidden">
+                    <div class="bg-gemini-card rounded-lg p-4 mb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-medium" id="fileName"></span>
+                            <span class="text-sm text-gemini-gray" id="fileSize"></span>
+                        </div>
+                        <div class="bg-gemini-dark rounded-full h-2">
+                            <div class="bg-gradient-to-r from-gemini-blue to-blue-400 h-2 rounded-full progress-bar" id="progressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" id="uploadBtn" class="w-full bg-gradient-to-r from-gemini-blue to-blue-500 hover:from-blue-500 hover:to-gemini-blue text-white py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                    </svg>
+                    <span id="uploadBtnText">Upload File</span>
+                </button>
+            </form>
+
+            <div id="uploadMessage" class="mt-6 p-4 rounded-xl hidden"></div>
+        </section>
+
+        <!-- Download Section -->
+        <section class="glass-effect rounded-3xl p-8 hover-scale slide-up" style="animation-delay: 0.2s">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 mx-auto mb-4 bg-green-500/20 rounded-2xl flex items-center justify-center">
+                    <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-2xl font-semibold mb-2">Download File</h2>
+                <p class="text-gemini-gray text-sm">Enter your file code</p>
+            </div>
+
+            <form id="downloadForm" class="space-y-6">
+                <div class="relative">
+                    <input
+                            type="text"
+                            id="codeInput"
+                            placeholder="Enter File Code"
+                            class="w-full px-6 py-4 bg-gemini-card border border-gemini-gray/30 rounded-xl text-gemini-text placeholder-gemini-gray focus:border-green-400 focus:outline-none focus:ring-2 focus:ring-green-400/20 transition-all duration-300"
+                            maxlength="6"
+                    />
+                    <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
+                        <svg class="w-5 h-5 text-gemini-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <button type="submit" id="downloadBtn" class="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-emerald-500 hover:to-green-500 text-white py-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <span id="downloadBtnText">Download File</span>
+                </button>
+            </form>
+
+            <div id="downloadMessage" class="mt-6 p-4 rounded-xl hidden"></div>
+        </section>
+
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="text-center py-8 px-4 border-t border-gemini-gray/20">
+    <p class="text-gemini-gray text-sm">
+        © 2025 FileShare. Uploaded files auto-delete after
+        <span class="font-semibold text-gemini-blue">30 minutes</span>
+    </p>
+</footer>
+
+  <script src="./js/app.js">
+    // File input handling with drag and drop
+    
+  </script>
+
+</body>
+</html>
